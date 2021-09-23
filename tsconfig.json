@@ -1,0 +1,19 @@
+// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "es6",
+    // this enables stricter inference for data properties on `this`
+    "strict": true,
+    "jsx": "preserve",
+    // "moduleResolution": "node",
+    "sourceMap": true,
+    "allowJs": true,
+    "rootDir": "static.src/js",
+    "outDir": "static/js",
+    "moduleResolution": "Node"
+  },
+  "files": [
+    "static.src/js/main.ts"
+  ],
+}

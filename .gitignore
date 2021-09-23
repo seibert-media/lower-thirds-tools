@@ -166,5 +166,12 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
+# NodeJS stuff
+node_modules
+package-lock.json
+
+# Webpack output directory
+static/dist
+
 .secret
 settings.yml
