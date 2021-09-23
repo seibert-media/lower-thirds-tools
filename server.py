@@ -11,7 +11,7 @@ import yaml
 from flask import Flask, make_response, render_template, request, send_from_directory
 from flask_babel import Babel, gettext, lazy_gettext
 from flask_wtf import CSRFProtect
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, Namespace
 from flask_wtf import CSRFProtect
 
 
@@ -95,21 +95,20 @@ def get_locale():
 
     return request.accept_languages.best_match(supported_languages)
 
-from flask_socketio import SocketIO
+# views
+
 @app.route('/')
 def index_view():  # put application's code here
     return render_template('base.html')
 
+# websocket events
 
-@socketio.on('connect')
-def handle_new_client(data):
-    print('new client connected, sending channels info')
-    emit('channels_data', {'channels': Channel.get_all_channels_map()})
+class WebSocketHandler(Namespace):
+    def on_connect(self):
+        print('new client connected, sending channels data [NAMESPACE]')
+        emit('channels_data', {'channels': Channel.get_all_channels_map()})
 
-@socketio.on('message')
-def handle_message(data):
-    print('received message: ' + data)
-
+socketio.on_namespace(WebSocketHandler('/'))
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, use_reloader=True)
