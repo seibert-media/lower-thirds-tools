@@ -9,11 +9,8 @@
     // "moduleResolution": "node",
     "sourceMap": true,
     "allowJs": true,
-    "rootDir": "static.src/js",
-    "outDir": "static/js",
+    "rootDir": ".",
+    "outDir": "static/dist",
     "moduleResolution": "Node"
   },
-  "files": [
-    "static.src/js/main.ts"
-  ],
 }

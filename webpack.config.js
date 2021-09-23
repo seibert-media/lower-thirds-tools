@@ -2,8 +2,8 @@ const path = require('path');
 
 module.exports = {
   entry: [
-    './static.src/js/main.ts',
-    './static.src/css/main.scss'
+    './src/main.ts',
+    './src/css/main.scss'
   ],
   devtool: 'source-map',
   mode: 'production',
@@ -30,7 +30,7 @@ module.exports = {
         generator: {
           filename: 'css/[name].css'
         },
-        //type: 'asset/resource'
+        type: 'asset/resource'
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
@@ -47,6 +47,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     path: path.resolve(__dirname, 'static', 'dist'),
-    assetModuleFilename: '[name][ext][query]'
+    assetModuleFilename: '[name][ext][query]',
+    clean: true,
   },
 };
