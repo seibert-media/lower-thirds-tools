@@ -1,0 +1,6 @@
+secret: "A secret for flask used to encrypt cookies"
+channels:
+  - A channel definition can be just a string,
+  - name: or an dictionary with at leat a name property.
+  - name: Channels definied as dicts can configgure additional settings, like a
+    slug: custom_slug

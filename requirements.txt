@@ -1,0 +1,8 @@
+Flask-SocketIO==5.1.1
+Flask==2.0.1
+Jinja2==3.0.1
+Flask-WTF>=0.15.1
+pillow>=8.3.2
+Flask-Babel>=2.0.0
+simple-websocket==0.3.0
+pyyaml==5.4.1

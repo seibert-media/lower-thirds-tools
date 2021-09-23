@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Lower Thirds Tool{% block title_extra %}{% endblock %}{% endblock %}</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+{% block body %}
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/">
+                <h3 class="title is-3">Lower Third Tool</h3>
+            </a>
+
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+        {% block navbar_menu %}
+            <div class="navbar-start">
+            {% block navbar_start %}
+                <a href="/" class="navbar-item">Home</a>
+            {% endblock %}
+            </div>
+            <div class="navbar-end">
+            {% block navbar_end %}
+                <div class="navbar-item">
+                    <div class="buttons">
+                        <a href="" class="button is-primary">bla</a>
+                    </div>
+                </div>
+            {% endblock %}
+            </div>
+        {% endblock %}
+        </div>
+    </nav>
+    {% if messages %}
+        <div class="container mt-1">
+            {% for message in messages %}
+                <div class="notification{% if message.tags %} {{ message.tags }}{% endif %}">
+                    <button class="delete"></button>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    <main class="section">{% block content %}{% endblock %}</main>
+{% endblock %}
+    <script src="/static/js/socket.io.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
