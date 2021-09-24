@@ -1,4 +1,3 @@
-import json
 import os
 import re
 import secrets
@@ -7,11 +6,11 @@ from dataclasses import dataclass
 from pprint import pprint
 from typing import Optional
 
+import flask
 import yaml
-from flask import Flask, make_response, render_template, request, send_from_directory
-from flask_babel import Babel, gettext, lazy_gettext
-from flask_wtf import CSRFProtect
-from flask_socketio import SocketIO, emit, Namespace
+from flask import Flask, render_template, request
+from flask_babel import Babel
+from flask_socketio import Namespace, SocketIO, emit, join_room, leave_room
 from flask_wtf import CSRFProtect
 
 
@@ -48,7 +47,7 @@ class Channel:
 
     @classmethod
     def get_all_channels_serialized(cls):
-        return {slug: channel.serialize() for slug, channel in cls._all_channels.items() }
+        return {slug: channel.serialize() for slug, channel in cls._all_channels.items()}
 
     @classmethod
     def get_channel(cls, channel):
@@ -59,6 +58,7 @@ class Channel:
             'name': self.name,
             'slug': self.slug,
         }
+
 
 try:
     config = yaml.load(open(os.environ.get('LOWER_THIRDS_TOOL_CONFIG', 'settings.yml')), Loader=yaml.SafeLoader)
@@ -92,6 +92,7 @@ supported_languages = {'de', 'en'}
 if app.debug:
     pprint(Channel.get_all_channels())
 
+
 @babel.localeselector
 def get_locale():
     requested_language = request.args.get('lang', request.form.get('language')).lower()
@@ -101,11 +102,13 @@ def get_locale():
 
     return request.accept_languages.best_match(supported_languages)
 
+
 # views
 
 @app.route('/')
 def index_view():  # put application's code here
     return render_template('base.html')
+
 
 # websocket events
 
