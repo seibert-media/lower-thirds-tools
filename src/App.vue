@@ -48,7 +48,11 @@ export default defineComponent({
         }
       }
       console.log('channel "%s" selected:', channel.name, channel)
+      if (this.currentChannel) {
+        this.socket.emit('leave_channel', {channel: this.currentChannel.slug})
+      }
       this.currentChannel = channel
+      this.socket.emit('join_channel', {channel: this.currentChannel.slug})
     },
   },
   created() {

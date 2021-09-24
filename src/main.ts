@@ -42,6 +42,14 @@ export class LowerThirdsTool {
             })
 
         });
+
+        socket.on('connect', () => {
+            // @ts-ignore
+            if (_this.app.currentChannel) {
+                // @ts-ignore
+                this.socket.emit('join_channel', {channel: _this.app.currentChannel.slug})
+            }
+        })
     }
 }
 
@@ -50,5 +58,5 @@ document.addEventListener("DOMContentLoaded", () => {
     let socket = io();
     let default_ini = new LowerThirdsTool(socket);
     // @ts-ignore
-    document.ltt = default_ini;
+    window.ltt = default_ini;
 })

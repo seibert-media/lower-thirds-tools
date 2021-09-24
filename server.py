@@ -117,6 +117,25 @@ class WebSocketHandler(Namespace):
         print('new client connected, sending channels data [NAMESPACE]')
         emit('channels_data', {'channels': Channel.get_all_channels_serialized()})
 
+    def on_join_channel(self, data: dict):
+        if not isinstance(data, dict):
+            raise TypeError('join_channel expects a dictionary with at least the key channel set')
+        if data['channel'] not in Channel.get_all_channels():
+            raise ValueError('join_channel called with unknown channel slug %s' % data['channel'])
+        channel = Channel.get_channel(data['channel'])
+        join_room(channel.slug)
+        print('session %s joined channel "%s" [%s]' % (flask.request.sid, channel.name, channel.slug))
+
+    def on_leave_channel(self, data):
+        if not isinstance(data, dict):
+            raise TypeError('leave_channel expects a dictionary with at least the key channel set')
+        if data['channel'] not in Channel.get_all_channels():
+            raise ValueError('leave_channel called with unknown channel slug %s' % data['channel'])
+        channel = Channel.get_channel(data['channel'])
+        leave_room(data['channel'])
+        print('session %s left channel "%s" [%s]' % (flask.request.sid, channel.name, channel.slug))
+
+
 socketio.on_namespace(WebSocketHandler('/'))
 
 if __name__ == '__main__':
