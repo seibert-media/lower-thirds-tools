@@ -1,3 +1,4 @@
+@use "sass:math";
 @import "bulma.sass";
 
 // fontawesome-free
@@ -36,6 +37,12 @@ html, body, div#root {
   }
 }
 
+$preview-width: 40vw;
+div.preview {
+  width: $preview-width;
+  height: math.div($preview-width, 16) * 9;
+  background-color: #000;
+}
 
 .narrower {
   width: 100%;
