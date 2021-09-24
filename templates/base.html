@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Lower Thirds Tool{% block title_extra %}{% endblock %}{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="/static/css/bulma.min.css">
     <link rel="stylesheet" type="text/css" href="/static/dist/css/main.css">
 </head>
 <body class="{% block body_class %}{% endblock %}">
@@ -53,7 +52,7 @@
                     {% endfor %}
                 </div>
             {% endif %}
-            <main class="section" id="app">{% block content %}{% endblock %}</main>
+            <div id="app" class="app-container">{% block content %}{% endblock %}</div>
         {% endblock %}
         <script src="/static/dist/main.js"></script>
     </div>

@@ -1,14 +1,41 @@
-$fa-font-path: '/static/fonts/fontawesome_free/webfonts';
+@import "bulma.sass";
 
+// fontawesome-free
+$fa-font-path: '/static/fonts/fontawesome_free/webfonts';
 @import "/static/fonts/fontawesome_free/scss/fontawesome.scss";
 @import "/static/fonts/fontawesome_free/scss/regular.scss";
 @import "/static/fonts/fontawesome_free/scss/solid.scss";
 @import "/static/fonts/fontawesome_free/scss/brands.scss";
 
-// bluma overrides
+// bulma overrides
 .navbar.is-dark .navbar-brand > .navbar-item .title {
   color: inherit;
 }
+
+html, body, div#root {
+  min-height: 100vh;
+}
+
+
+.app-container {
+  min-height: calc(100vh - 3.5rem);
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  align-content: stretch;
+
+  aside.side-menu {
+    width: 15rem;
+    flex-grow: 0;
+    background-color: $light;
+    padding-top: 1rem;
+    padding-left: 1rem;
+  }
+  main {
+    flex-grow: 1;
+  }
+}
+
 
 .narrower {
   width: 100%;
@@ -20,4 +47,3 @@ $fa-font-path: '/static/fonts/fontawesome_free/webfonts';
 .align-right {
   text-align: right;
 }
-
