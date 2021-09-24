@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "watch": "webpack watch --mode=development"
   },
   "devDependencies": {
     "@vue/compiler-sfc": "^3.2.16",
