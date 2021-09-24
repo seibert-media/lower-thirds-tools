@@ -1,4 +1,6 @@
 const path = require('path');
+const { VueLoaderPlugin } = require("vue-loader");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   entry: [
@@ -11,7 +13,15 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
+        loader: 'ts-loader',
+        exclude: /node_modules/,
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
+        },
+      },
+      {
+        test: /\.vue$/,
+        use: "vue-loader",
         exclude: /node_modules/,
       },
       {
@@ -50,4 +60,10 @@ module.exports = {
     assetModuleFilename: '[name][ext][query]',
     clean: true,
   },
+  plugins: [
+    new VueLoaderPlugin(),
+    new MiniCssExtractPlugin({
+      filename: "[name].css"
+    })
+  ],
 };

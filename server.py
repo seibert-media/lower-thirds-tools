@@ -47,12 +47,18 @@ class Channel:
         return cls._all_channels
 
     @classmethod
-    def get_all_channels_map(cls):
-        return {slug: channel.name for slug, channel in cls._all_channels.items() }
+    def get_all_channels_serialized(cls):
+        return {slug: channel.serialize() for slug, channel in cls._all_channels.items() }
 
     @classmethod
     def get_channel(cls, channel):
         return cls._all_channels[channel]
+
+    def serialize(self):
+        return {
+            'name': self.name,
+            'slug': self.slug,
+        }
 
 try:
     config = yaml.load(open(os.environ.get('LOWER_THIRDS_TOOL_CONFIG', 'settings.yml')), Loader=yaml.SafeLoader)
@@ -106,7 +112,7 @@ def index_view():  # put application's code here
 class WebSocketHandler(Namespace):
     def on_connect(self):
         print('new client connected, sending channels data [NAMESPACE]')
-        emit('channels_data', {'channels': Channel.get_all_channels_map()})
+        emit('channels_data', {'channels': Channel.get_all_channels_serialized()})
 
 socketio.on_namespace(WebSocketHandler('/'))
 
