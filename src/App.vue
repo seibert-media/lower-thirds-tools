@@ -19,13 +19,13 @@
           <div class="field">
             <label class="label">Title</label>
             <div class="control">
-              <input class="input" type="text" placeholder="Title">
+              <input class="input" type="text" placeholder="Title" v-model="title">
             </div>
           </div>
           <div class="field">
             <label class="label">Subtitle</label>
             <div class="control">
-              <input class="input" type="text" placeholder="Subtitle">
+              <input class="input" type="text" placeholder="Subtitle" v-model="subtitle">
             </div>
           </div>
           <div class="field is-grouped">
@@ -53,7 +53,12 @@
         </div>
       </div>
       <div class="column">
-        <div class="preview"></div>
+        <div class="preview">
+          <div class="lower-third lower-third-aec-centered">
+            <div class="lt-title"><span>{{ title }}</span></div>
+            <div class="lt-subtitle"><span>{{ subtitle }}</span></div>
+          </div>
+        </div>
       </div>
     </section>
   </main>
@@ -80,7 +85,9 @@ export default defineComponent({
     return {
       channels: {} as ChannelsData,
       currentChannel: null as Channel | null,
-      styles: ['test', 'test', 'test', 'test', 'test', 'test',]
+      styles: ['test', 'test', 'test', 'test', 'test', 'test',],
+      title: '',
+      subtitle: ''
     }
   },
   methods: {
