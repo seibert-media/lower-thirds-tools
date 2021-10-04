@@ -99,6 +99,7 @@ export default defineComponent({
       const _this = this
       const lastOpenElement = this.insertWrapper?.querySelector('.text');
       const showDuration = duration
+      this.abortController = new AbortController();
       console.log('show called, duration: ', showDuration)
       lastOpenElement?.addEventListener('animationend', (e) => {
           if (e.currentTarget != e.target) { return; }
