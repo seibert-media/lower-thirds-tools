@@ -13,7 +13,7 @@
         </div>
       </div>
     </section>
-    <section class="columns section is-variable is-6" v-if="currentChannel">
+    <section class="columns is-desktop section is-variable is-6" v-if="currentChannel">
       <div class="control-panel column">
         <h4 class="title is-4">Controls</h4>
           <div class="field">

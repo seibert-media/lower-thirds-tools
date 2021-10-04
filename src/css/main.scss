@@ -37,12 +37,31 @@ html, body, div#root {
   }
 }
 
-$preview-width: 40vw;
 div.preview {
-  position: relative;
-  width: $preview-width;
-  height: math.div($preview-width, 16) * 9;
+  position: absolute;
+  width: 1920px;
+  height: 1080px;
   background-color: #656565;
+  transform-origin: top left;
+  transform: scale(0.2);
+}
+
+@media screen and (min-width: 1420px) {
+  div.preview {
+    transform: scale(0.25);
+  }
+}
+
+@media screen and (min-width: 1750px) {
+  div.preview {
+    transform: scale(0.33);
+  }
+}
+
+@media screen and (min-width: 2000px) {
+  div.preview {
+    transform: scale(0.50);
+  }
 }
 
 $lower-third-zindex: 200;
