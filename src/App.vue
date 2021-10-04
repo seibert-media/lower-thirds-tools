@@ -54,9 +54,8 @@
       </div>
       <div class="column">
         <div class="preview">
-          <div class="lower-third lower-third-aec-centered">
-            <div class="lt-title"><span>{{ title }}</span></div>
-            <div class="lt-subtitle"><span>{{ subtitle }}</span></div>
+          <div class="lower-third">
+            <insert_seibert_middle :title="title" :subtitle="subtitle"></insert_seibert_middle>
           </div>
         </div>
       </div>
@@ -69,11 +68,13 @@ import { defineComponent, PropType } from 'vue'
 import {Channel, ChannelsData} from "./types";
 import {Socket} from "socket.io-client";
 import Menu from "./Menu.vue"
+import SeibertMiddle from "./lower_thirds/SeibertMiddle.vue";
 
 export default defineComponent({
   name: "App",
   components: {
-    app_menu: Menu
+    app_menu: Menu,
+    insert_seibert_middle: SeibertMiddle,
   },
   props: {
     'socket': {

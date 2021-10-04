@@ -50,7 +50,7 @@ export default defineComponent({
       return sorted
     },
     selectedChannel (): string {
-      if (this.currentChannel !== null) {
+      if (this.currentChannel) {
         return this.currentChannel.slug
       }
       return ''
