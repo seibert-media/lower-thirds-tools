@@ -1,5 +1,5 @@
 <template>
-  <div class="lower-third-seibert-middle open">
+  <div :class="['lower-third-seibert-middle', { edit: editMode && !animationRunning }, animationClass]" ref="insertWrapper">
 		<div class="main">
 			<div class="title-box first">
 				<div class="title-box second">
@@ -25,10 +25,24 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from "vue";
+import {defineComponent, PropType, ref} from "vue";
+
+enum AnimationStates {
+  closed,
+  opening,
+  open,
+  closing
+}
 
 export default defineComponent({
   name: "SeibertMiddle",
+  data: () => {
+    return {
+      animationRunning: false,
+      animationState: AnimationStates.closed,
+      animationTimerRef: <NodeJS.Timeout | null>null,
+    }
+  },
   props: {
     'title': {
       type: String,
@@ -37,8 +51,106 @@ export default defineComponent({
     'subtitle': {
       type: String,
       required: false,
+    },
+    'editMode': {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
+  computed: {
+    animationClass() {
+      if (this.animationState == AnimationStates.opening || this.animationState == AnimationStates.open) {
+        return 'open'
+      } else if (this.animationState == AnimationStates.closing) {
+        return 'close'
+      }
+      return ''
+    }
+  },
+  emits: {
+    'opening': null,
+    'open': null,
+    'closing': null,
+    'closed': null,
+  },
+  setup: () => {
+    const insertWrapper = ref<HTMLElement>()
+    const abortController = new AbortController();
+    return { insertWrapper, abortController }
+  },
+  methods: {
+    show(duration?: number) {
+      if (!this.title) {
+        console.warn('show called without text set, ignoring')
+        return
+      }
+      if (duration === undefined || duration < 0) {
+        // if no duration is specified we calculate it based on the number of words shown
+        duration = 0
+        let reading_speed = 125 // half of the average human reading speed
+        if (this.title) {
+          duration += this.title.split(' ').length * 60 / reading_speed
+        }
+        if (this.subtitle) {
+          duration += this.subtitle.split(' ').length * 60 / reading_speed
+        }
+      }
+      const _this = this
+      const lastOpenElement = this.insertWrapper?.querySelector('.text');
+      const showDuration = duration
+      console.log('show called, duration: ', showDuration)
+      lastOpenElement?.addEventListener('animationend', (e) => {
+          if (e.currentTarget != e.target) { return; }
+          if (_this.animationState == AnimationStates.opening) {
+              console.log('finished open-animation, sleeping', showDuration)
+              _this.animationState = AnimationStates.open
+              this.$emit('open')
+              _this.animationTimerRef = setTimeout(function () {
+                  _this.animationTimerRef = null
+                  _this.hide()
+              }, showDuration * 1000);
+          }
+      }, { signal: this.abortController.signal });
+      this.animationRunning = true
+      this.animationState = AnimationStates.opening
+      this.$emit('opening')
+    },
+    hide(immediately?: boolean) {
+      const _this = this
+      const lastCloseElement = this.insertWrapper?.querySelector('.title-box.first');
+      if (immediately === undefined) {
+        immediately = false
+      }
+      if (this.animationTimerRef) {
+        clearTimeout(this.animationTimerRef)
+        this.animationTimerRef = null
+      }
+      if (immediately) {
+        _this.animationState = AnimationStates.closed
+        _this.animationRunning = false
+        _this.abortController.abort();
+        this.$emit('closed')
+      } else {
+        console.log('starting close-animation')
+        lastCloseElement?.addEventListener('animationend', (e) => {
+          if (e.currentTarget != e.target) { return; }
+          if (_this.animationState == AnimationStates.closing) {
+              console.log('finished close-animation')
+              _this.animationState = AnimationStates.closed
+              _this.animationRunning = false
+              _this.abortController.abort();
+              this.$emit('closed')
+          }
+        }, { signal: this.abortController.signal });
+        _this.animationState = AnimationStates.closing
+        this.$emit('closing')
+      }
+    },
+    abort() {
+      this.hide(true)
+    }
+  }
 });
 </script>
 
@@ -262,6 +374,19 @@ export default defineComponent({
     to {
       transform: translateY(-100%);
     }
+  }
+
+  .lower-third-seibert-middle.edit .main .title-box {
+    transform: none;
+  }
+  .lower-third-seibert-middle.edit .main .text {
+    transform: none;
+  }
+  .lower-third-seibert-middle.edit .sub .title-box {
+    transform: none;
+  }
+  .lower-third-seibert-middle.edit .sub .text {
+    transform: none;
   }
 
 </style>

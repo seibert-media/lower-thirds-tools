@@ -30,10 +30,10 @@
           </div>
           <div class="field is-grouped">
           <div class="control">
-            <button class="button is-primary">Go</button>
+            <button class="button is-primary" @click="go">Go</button>
           </div>
           <div class="control">
-            <button class="button is-primary">Preview</button>
+            <button class="button is-primary" @click="preview">Preview</button>
           </div>
           <div class="control">
             <button class="button is-danger">Reset</button>
@@ -55,7 +55,7 @@
       <div class="column">
         <div class="preview">
           <div class="lower-third">
-            <insert_seibert_middle :title="title" :subtitle="subtitle"></insert_seibert_middle>
+            <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="currentInsert"></insert_seibert_middle>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue'
+import { defineComponent, PropType, ref } from 'vue'
 import {Channel, ChannelsData} from "./types";
 import {Socket} from "socket.io-client";
 import Menu from "./Menu.vue"
@@ -107,9 +107,16 @@ export default defineComponent({
       window.location.hash = channel.slug
       this.socket.emit('join_channel', {channel: this.currentChannel.slug})
     },
+    go() {
+      this.currentInsert?.show()
+    },
+    preview() {
+      this.currentInsert?.show()
+    }
   },
-  created() {
-    //
+  setup() {
+    const currentInsert = ref<InstanceType<typeof SeibertMiddle>>()
+    return { currentInsert }
   },
 })
 </script>
