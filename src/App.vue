@@ -1,5 +1,5 @@
 <template>
-  <app_menu :channels="channels" @channelSelected="selectChannel"></app_menu>
+  <app_menu :channels="channels" :current-channel="currentChannel" @channelSelected="selectChannel"></app_menu>
   <main>
     <section class="hero is-fullheight-with-navbar" v-if="!currentChannel">
       <div class="hero-body">
@@ -103,6 +103,7 @@ export default defineComponent({
         this.socket.emit('leave_channel', {channel: this.currentChannel.slug})
       }
       this.currentChannel = channel
+      window.location.hash = channel.slug
       this.socket.emit('join_channel', {channel: this.currentChannel.slug})
     },
   },

@@ -20,13 +20,16 @@ export default defineComponent({
   name: "Menu",
   data: () => {
     return {
-      selectedChannel: '',
     }
   },
   props: {
     'channels': {
       type: Object as PropType<ChannelsData>,
       required: true,
+    },
+    'currentChannel': {
+      type: Object as PropType<Channel>,
+      required: false,
     }
   },
   computed: {
@@ -45,6 +48,12 @@ export default defineComponent({
         return 0;
       })
       return sorted
+    },
+    selectedChannel (): string {
+      if (this.currentChannel !== null) {
+        return this.currentChannel.slug
+      }
+      return ''
     }
   },
   methods: {
@@ -52,7 +61,6 @@ export default defineComponent({
       if (this.channels[slug] === undefined) {
         console.error('tried to select invalid channel')
       } else {
-        this.selectedChannel = slug
         this.$emit('channelSelected', this.channels[slug])
       }
     }

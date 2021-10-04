@@ -36,11 +36,14 @@ export class LowerThirdsTool {
                     }
                 }
             }
-            console.log(removed_channels)
             removed_channels.forEach(slug => {
                 delete _this.channels[slug]
             })
-
+            // @ts-ignore
+            if (_this.app.currentChannel === null && window.location.hash && _this.channels[window.location.hash.substr(1)]) {
+                // @ts-ignore
+                _this.app.selectChannel(_this.channels[window.location.hash.substr(1)])
+            }
         });
 
         socket.on('connect', () => {
