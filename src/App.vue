@@ -19,24 +19,27 @@
           <div class="field">
             <label class="label">Title</label>
             <div class="control">
-              <input class="input" type="text" placeholder="Title" v-model="title">
+              <input class="input" type="text" placeholder="Title" :disabled="isAnimationRunning" v-model="title">
             </div>
           </div>
           <div class="field">
             <label class="label">Subtitle</label>
             <div class="control">
-              <input class="input" type="text" placeholder="Subtitle" v-model="subtitle">
+              <input class="input" type="text" placeholder="Subtitle" :disabled="isAnimationRunning" v-model="subtitle">
             </div>
           </div>
           <div class="field is-grouped">
           <div class="control">
-            <button class="button is-primary" @click="go">Go</button>
+            <button class="button is-primary" :disabled="isAnimationRunning" @click="go">Go</button>
           </div>
           <div class="control">
-            <button class="button is-primary" @click="preview">Preview</button>
+            <button class="button is-primary" :disabled="isAnimationRunning" @click="preview">Preview</button>
           </div>
           <div class="control">
-            <button class="button is-danger">Reset</button>
+            <button class="button is-danger" @click="stop">STOP</button>
+          </div>
+          <div class="control">
+            <button class="button is-danger" :disabled="isAnimationRunning" @click="reset">Reset</button>
           </div>
         </div>
         <h4 class="title is-4">Styles</h4>
@@ -91,6 +94,14 @@ export default defineComponent({
       subtitle: ''
     }
   },
+  computed: {
+    isAnimationRunning() {
+      if (this.currentInsert?.animationRunning) {
+        return true
+      }
+      return false
+    },
+  },
   methods: {
     selectChannel(channel: string | Channel) {
       if (typeof channel === "string") {
@@ -112,6 +123,13 @@ export default defineComponent({
     },
     preview() {
       this.currentInsert?.show()
+    },
+    stop() {
+      this.currentInsert?.abort()
+    },
+    reset() {
+      this.title = ''
+      this.subtitle = ''
     }
   },
   setup() {
