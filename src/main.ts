@@ -6,7 +6,7 @@ import App from "/src/App.vue";
 
 export class LowerThirdsTool {
     channels: ChannelsData;
-    app: ComponentPublicInstance
+    app: InstanceType<typeof App>
     socket: Socket
 
     constructor(socket: Socket) {
@@ -16,7 +16,6 @@ export class LowerThirdsTool {
 
         // Without that typescript will complain that channels doesn't exist, even though it does.
         // I have no idea how to fix it and the sadly the Vue Typescript documentation is not help what so ever
-        // @ts-ignore
         this.channels = this.app.channels;
 
         socket.on('channels_data', (data: {channels: ChannelsData}) => {
@@ -39,17 +38,13 @@ export class LowerThirdsTool {
             removed_channels.forEach(slug => {
                 delete _this.channels[slug]
             })
-            // @ts-ignore
             if (_this.app.currentChannel === null && window.location.hash && _this.channels[window.location.hash.substr(1)]) {
-                // @ts-ignore
                 _this.app.selectChannel(_this.channels[window.location.hash.substr(1)])
             }
         });
 
         socket.on('connect', () => {
-            // @ts-ignore
             if (_this.app.currentChannel) {
-                // @ts-ignore
                 this.socket.emit('join_channel', {channel: _this.app.currentChannel.slug})
             }
         })
