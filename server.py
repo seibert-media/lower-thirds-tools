@@ -3,6 +3,7 @@ import re
 import secrets
 import string
 from dataclasses import dataclass
+from functools import wraps
 from pprint import pprint
 from typing import Optional
 
@@ -102,6 +103,26 @@ class Channel:
         # self.lower_third_visible = True
         self.update_channel_status()
 
+    def hide_lower_third(self):
+        print('hiding lower third in channel: "%s" [%s]' % (self.name, self.slug))
+        self.current_lower_third = None
+        self.lower_third_visible = False
+        data = {
+            'channel': self.slug
+        }
+        socketio.emit('hide_lower_third', data, to=self.slug)
+        self.update_channel_status()
+
+    def kill_lower_third(self):
+        print('killing lower third in channel: "%s" [%s]' % (self.name, self.slug))
+        self.current_lower_third = None
+        self.lower_third_visible = False
+        data = {
+            'channel': self.slug
+        }
+        socketio.emit('kill_lower_third', data, to=self.slug)
+        self.update_channel_status()
+
     def update_channel_status(self, to=None):
         if to is None:
             to = self.slug
@@ -175,6 +196,36 @@ def playout_view(channel: str):
 
 # websocket events
 
+def event_data_verifier(required_keys: Optional[set] = None):
+    if not required_keys:
+        required_keys = set()
+    else:
+        required_keys = set(required_keys)
+    required_keys.add('channel')
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(self, data, *args, **kwargs):
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError('%s expects a dictionary' % func.__name__)
+                if not data.keys() >= required_keys:
+                    raise ValueError('%s needs at least the keys %s' % (func.__name__, ', '.join(required_keys)))
+                if data['channel'] not in Channel.get_all_channels():
+                    raise ValueError('%s called with unknown channel slug %s' % (func.__name__, data['channel']))
+            except (ValueError, TypeError) as e:
+                return {
+                    'status': 'error',
+                    'error': e.__class__.__name__,
+                    'msg': str(e),
+                }
+            return func(self, data, *args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 class WebSocketHandler(Namespace):
     def on_connect(self):
         print('new client connected, sending channels data [NAMESPACE]')
@@ -199,42 +250,45 @@ class WebSocketHandler(Namespace):
         leave_room(data['channel'])
         print('session %s left channel "%s" [%s]' % (flask.request.sid, channel.name, channel.slug))
 
+    @event_data_verifier(required_keys={'design', 'title', 'subtitle'})
     def on_show_lower_third(self, data):
-        try:
-            if not isinstance(data, dict):
-                raise TypeError('show_lower_third expects a dictionary')
-            if not data.get('channel') or not data.get('title') or not data.get('design'):
-                raise ValueError('show_lower_third needs at least the channel, title and design')
-            if data['channel'] not in Channel.get_all_channels():
-                raise ValueError('show_lower_third called with unknown channel slug %s' % data['channel'])
-            channel = Channel.get_channel(data['channel'])
-            duration = data.get('duration')
-            if duration or duration == 0:
-                duration = float(duration)
-            else:
-                duration = None
+        channel = Channel.get_channel(data['channel'])
+        duration = data.get('duration')
+        if duration or duration == 0:
+            duration = float(duration)
+        else:
+            duration = None
+        if channel.lock:
+            channel.lock.acquire()
+        if channel.lower_third_visible:
             if channel.lock:
-                channel.lock.acquire()
-            if channel.lower_third_visible:
                 channel.lock.release()
-                return {
-                    'status': 'error',
-                    'error': 'concurrency_error',
-                    'msg': 'Another lower third is already being displayed.',
-                }
-        except (ValueError, TypeError) as e:
             return {
                 'status': 'error',
-                'error': e.__class__.__name__,
-                'msg': str(e),
+                'error': 'concurrency_error',
+                'msg': 'Another lower third is already being displayed.',
             }
+
         channel.show_lower_third(LowerThird(
             design=data['design'],
             title=data['title'],
             subtitle=data.get('subtitle'),
             duration=duration
         ))
-        channel.lock.release()
+        if channel.lock:
+            channel.lock.release()
+        return {'status': 'success'}
+
+    @event_data_verifier()
+    def on_hide_lower_third(self, data):
+        channel = Channel.get_channel(data['channel'])
+        channel.hide_lower_third()
+        return {'status': 'success'}
+
+    @event_data_verifier()
+    def on_kill_lower_third(self, data):
+        channel = Channel.get_channel(data['channel'])
+        channel.kill_lower_third()
         return {'status': 'success'}
 
 
