@@ -149,13 +149,12 @@ export default defineComponent({
       this.title = ''
       this.subtitle = ''
     },
-    showLowerThird(lt: LowerThird) {
+    async showLowerThird(lt: LowerThird) {
       this.currentInsertData.design = lt.design
       this.currentInsertData.title = lt.title
       this.currentInsertData.subtitle = lt.subtitle
       this.currentInsertData.duration = lt.duration
-      this.$forceUpdate()
-      this.currentInsertPreview?.$forceUpdate()
+      await this.$forceUpdate()
       this.currentInsertPreview?.show()
     }
   },
