@@ -119,7 +119,15 @@ export default defineComponent({
       this.socket.emit('join_channel', {channel: this.currentChannel.slug})
     },
     go() {
-      this.currentInsert?.show()
+      if (!this.currentChannel) return
+      this.socket.emit('show_lower_third', {
+        'channel': this.currentChannel.slug,
+        'design': 'seibert_middle',
+        'title': this.title,
+        'subtitle': this.subtitle,
+      }, (response: {[id: string]: Any}) => {
+        console.log('received show_lower_third ack', response)
+      })
     },
     preview() {
       this.currentInsert?.show()

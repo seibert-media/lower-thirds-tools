@@ -15,6 +15,22 @@ from flask_wtf import CSRFProtect
 
 
 @dataclass
+class LowerThird:
+    design: str
+    title: str
+    subtitle: Optional[str] = None
+    duration: Optional[float] = None
+
+    def serialize(self):
+        return {
+            'design': self.design,
+            'title': self.title,
+            'subtitle': self.subtitle,
+            'duration': self.duration,
+        }
+
+
+@dataclass
 class Channel:
     """
     Channel Entity Class
@@ -41,6 +57,15 @@ class Channel:
                              % (self.slug, self.__class__._all_channels[self.slug].name))
         self.__class__._all_channels[self.slug] = self
 
+        self.lower_third_visible: bool = False
+        self.current_lower_third: Optional[LowerThird] = None
+
+        try:
+            from gevent.lock import BoundedSemaphore
+            self.lock = BoundedSemaphore()
+        except ImportError:
+            self.lock = None
+
     @classmethod
     def get_all_channels(cls):
         return cls._all_channels
@@ -58,6 +83,35 @@ class Channel:
             'name': self.name,
             'slug': self.slug,
         }
+
+    def show_lower_third(self, lt: LowerThird):
+        print('showing lower third in channel: "%s" [%s]' % (self.name, self.slug))
+        print('design: "%(design)s" title: "%(title)s" subtitle: "%(subtitle)s" duration: %(duration)0.3f' % {
+            'design': lt.design,
+            'title': lt.title,
+            'subtitle': lt.subtitle,
+            'duration': lt.duration if lt.duration is not None else -1,
+        })
+        self.current_lower_third = lt
+        data = {
+            'channel': self.slug
+        }
+        data.update(lt.serialize())
+        socketio.emit('show_lower_third', data, to=self.slug)
+        # currently disable as there is no easy and reliable way to unlock this server side if all clients fail
+        # self.lower_third_visible = True
+        self.update_channel_status()
+
+    def update_channel_status(self, to=None):
+        if to is None:
+            to = self.slug
+        data = {
+            'channel': self.slug,
+            'lower_third_visible': self.lower_third_visible,
+            'current_lower_third': self.current_lower_third.serialize() if self.current_lower_third else None,
+        }
+        print('sending channel status update to %s' % to)
+        socketio.emit('channel_status', data, to=to)
 
 
 try:
@@ -124,6 +178,7 @@ class WebSocketHandler(Namespace):
             raise ValueError('join_channel called with unknown channel slug %s' % data['channel'])
         channel = Channel.get_channel(data['channel'])
         join_room(channel.slug)
+        channel.update_channel_status(to=flask.request.sid)
         print('session %s joined channel "%s" [%s]' % (flask.request.sid, channel.name, channel.slug))
 
     def on_leave_channel(self, data):
@@ -134,6 +189,44 @@ class WebSocketHandler(Namespace):
         channel = Channel.get_channel(data['channel'])
         leave_room(data['channel'])
         print('session %s left channel "%s" [%s]' % (flask.request.sid, channel.name, channel.slug))
+
+    def on_show_lower_third(self, data):
+        try:
+            if not isinstance(data, dict):
+                raise TypeError('show_lower_third expects a dictionary')
+            if not data.get('channel') or not data.get('title') or not data.get('design'):
+                raise ValueError('show_lower_third needs at least the channel, title and design')
+            if data['channel'] not in Channel.get_all_channels():
+                raise ValueError('show_lower_third called with unknown channel slug %s' % data['channel'])
+            channel = Channel.get_channel(data['channel'])
+            duration = data.get('duration')
+            if duration or duration == 0:
+                duration = float(duration)
+            else:
+                duration = None
+            if channel.lock:
+                channel.lock.acquire()
+            if channel.lower_third_visible:
+                channel.lock.release()
+                return {
+                    'status': 'error',
+                    'error': 'concurrency_error',
+                    'msg': 'Another lower third is already being displayed.',
+                }
+        except (ValueError, TypeError) as e:
+            return {
+                'status': 'error',
+                'error': e.__class__.__name__,
+                'msg': str(e),
+            }
+        channel.show_lower_third(LowerThird(
+            design=data['design'],
+            title=data['title'],
+            subtitle=data.get('subtitle'),
+            duration=duration
+        ))
+        channel.lock.release()
+        return {'status': 'success'}
 
 
 socketio.on_namespace(WebSocketHandler('/'))

@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client"
 import { createApp, ComponentPublicInstance } from "vue"
 
-import { Channel, ChannelsData } from "./types"
+import {Channel, ChannelsData, ChannelStatus, LowerThird} from "./types"
 import App from "/src/App.vue";
 
 export class LowerThirdsTool {
@@ -41,6 +41,20 @@ export class LowerThirdsTool {
             if (_this.app.currentChannel === null && window.location.hash && _this.channels[window.location.hash.substr(1)]) {
                 _this.app.selectChannel(_this.channels[window.location.hash.substr(1)])
             }
+        });
+
+        socket.on('channel_status', (data: ChannelStatus & {channel: string}) => {
+            console.log('received channels status update', data)
+            if (_this.channels[data.channel].status === undefined) {
+                _this.channels[data.channel].status = {
+                    lower_third_visible: data.lower_third_visible,
+                    current_lower_third: data.current_lower_third,
+                }
+            }
+        });
+
+        socket.on('show_lower_third', (data: LowerThird & {channel: string}) => {
+            console.log('received show_lower_third event for channel', data.channel, data)
         });
 
         socket.on('connect', () => {
