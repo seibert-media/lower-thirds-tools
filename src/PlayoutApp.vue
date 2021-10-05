@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue'
-import {Channel, ChannelsData, LowerThird} from "./types";
+import {Channel, ChannelsData, InsertDesigns, LowerThird} from "./types";
 import {Socket} from "socket.io-client";
 import Seibert from "./lower_thirds/Seibert.vue";
 import SeibertMiddle from "./lower_thirds/SeibertMiddle.vue";
@@ -27,7 +27,18 @@ export default defineComponent({
     return {
       channels: {} as ChannelsData,
       currentChannel: null as Channel | null,
-      styles: ['seibert', 'seibert_middle',],
+      styles: {
+        seibert: {
+          name: 'Seibert Bauchbinde',
+          component_name: 'insert_seibert',
+          thumbnail: require('./lower_thirds/Seibert.png')
+        },
+        seibert_middle: {
+          name: 'Seibert Bauchbinde Mitte',
+          component_name: 'insert_seibert_middle',
+          thumbnail: require('./lower_thirds/SeibertMiddle.png')
+        }
+      } as InsertDesigns,
       currentInsertData: {
         design: '',
         title: '',
@@ -42,10 +53,10 @@ export default defineComponent({
 
     },
     liveInsertComponent() {
-      if (this.currentInsertData.design && this.styles.indexOf(this.currentInsertData.design) !== -1) {
-        return 'insert_' + this.currentInsertData.design
+      if (this.currentInsertData.design) {
+        return this.styles[this.currentInsertData.design]?.component_name
       } else {
-        return 'insert_' + this.styles[0]
+        return this.styles[Object.keys(this.styles)[0]].component_name
       }
     }
   },

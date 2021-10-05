@@ -19,3 +19,13 @@ export interface Channel {
 export type ChannelsData = {
     [id: string] : Channel
 }
+
+export interface InsertDesign {
+    name: string
+    component_name: string
+    thumbnail?: string
+}
+
+export type InsertDesigns = {
+    [id: string] : InsertDesign
+}

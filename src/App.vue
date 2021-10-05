@@ -54,11 +54,11 @@
         </div>
         <h4 class="title is-4">Styles</h4>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-one-third styles-list" v-for="style in styles" :key="style">
-            <div :class="['card', 'style', {'is-active': insertStyle === style}]" @click="insertStyle = style">
+          <div class="column is-one-third styles-list" v-for="(style, slug) in styles" :key="slug">
+            <div :class="['card', 'style', {'is-active': insertDesign === slug}]" @click="insertDesign = slug">
               <div class="card-image">
                 <figure class="image is-16by9">
-                  <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+                  <img :src="style.thumbnail" :alt="style.name" >
                 </figure>
               </div>
             </div>
@@ -85,7 +85,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue'
-import {Channel, ChannelsData, LowerThird} from "./types";
+import {Channel, ChannelsData, InsertDesigns, LowerThird} from "./types";
 import {Socket} from "socket.io-client";
 import Menu from "./Menu.vue"
 import Seibert from "./lower_thirds/Seibert.vue";
@@ -108,8 +108,19 @@ export default defineComponent({
     return {
       channels: {} as ChannelsData,
       currentChannel: null as Channel | null,
-      styles: ['seibert', 'seibert_middle',],
-      insertStyle: '',
+      styles: {
+        seibert: {
+          name: 'Seibert Bauchbinde',
+          component_name: 'insert_seibert',
+          thumbnail: require('./lower_thirds/Seibert.png')
+        },
+        seibert_middle: {
+          name: 'Seibert Bauchbinde Mitte',
+          component_name: 'insert_seibert_middle',
+          thumbnail: require('./lower_thirds/SeibertMiddle.png')
+        }
+      } as InsertDesigns,
+      insertDesign: '',
       title: '',
       subtitle: '',
       duration: null as number | null,
@@ -135,17 +146,17 @@ export default defineComponent({
       return !!this.liveInsertPreview?.animationRunning
     },
     previewInsertComponent() {
-      if (this.insertStyle && this.styles.indexOf(this.insertStyle) !== -1) {
-        return 'insert_' + this.insertStyle
+      if (this.insertDesign) {
+        return this.styles[this.insertDesign]?.component_name
       } else {
-        return 'insert_' + this.styles[0]
+        return this.styles[Object.keys(this.styles)[0]].component_name
       }
     },
     liveInsertComponent() {
-      if (this.currentInsertData.design && this.styles.indexOf(this.currentInsertData.design) !== -1) {
-        return 'insert_' + this.currentInsertData.design
+      if (this.currentInsertData.design) {
+        return this.styles[this.currentInsertData.design]?.component_name
       } else {
-        return 'insert_' + this.styles[0]
+        return this.styles[Object.keys(this.styles)[0]].component_name
       }
     }
   },
@@ -169,7 +180,7 @@ export default defineComponent({
       if (!this.currentChannel) return
       this.socket.emit('show_lower_third', {
         channel: this.currentChannel.slug,
-        design: this.insertStyle,
+        design: this.insertDesign,
         title: this.title,
         subtitle: this.subtitle,
         duration: (this.duration || this.duration === 0) ? this.duration : undefined
@@ -227,7 +238,7 @@ export default defineComponent({
     return { liveInsertPreview, previewInsert }
   },
   mounted() {
-    this.insertStyle = this.styles[0]
+    this.insertDesign = Object.keys(this.styles)[0]
   }
 })
 </script>
