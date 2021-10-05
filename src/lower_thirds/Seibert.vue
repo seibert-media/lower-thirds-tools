@@ -162,7 +162,7 @@ export default defineComponent({
     position: absolute;
     left: 120px;
     bottom: 80px;
-    font-family: "ConduitITC TT", Lato, sans-serif, Con;
+    font-family: "ConduitITC TT", Lato, JoyPixels, "Noto Emoji Color", sans-serif;
   }
   .lower-third-seibert .text-spacer {
     visibility: hidden;
