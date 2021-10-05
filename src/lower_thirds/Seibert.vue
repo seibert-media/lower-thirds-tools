@@ -304,6 +304,7 @@ export default defineComponent({
   }
   .lower-third-seibert .sub .title-box {
     background: #cad333;
+    min-width: 60%;
   }
   .lower-third-seibert .sub .text-clip {
     margin: 5px 0;
