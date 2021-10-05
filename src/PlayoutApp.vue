@@ -60,7 +60,7 @@ export default defineComponent({
       this.currentInsertData.subtitle = lt.subtitle
       this.currentInsertData.duration = lt.duration
       await this.$forceUpdate()
-      this.currentInsert?.show()
+      this.currentInsert?.show((lt.duration || lt.duration === 0) ? lt.duration : undefined)
     },
     hideLowerThird() {
       this.currentInsert?.hide()

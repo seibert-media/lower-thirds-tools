@@ -107,10 +107,12 @@ export default defineComponent({
               console.log('finished open-animation, sleeping', showDuration)
               _this.animationState = AnimationStates.open
               this.$emit('open')
-              _this.animationTimerRef = setTimeout(function () {
-                  _this.animationTimerRef = null
-                  _this.hide()
-              }, showDuration * 1000);
+              if (showDuration > 0) {
+                _this.animationTimerRef = setTimeout(function () {
+                    _this.animationTimerRef = null
+                    _this.hide()
+                }, showDuration * 1000)
+              }
           }
       }, { signal: this.abortController.signal });
       this.animationRunning = true

@@ -28,6 +28,13 @@
               <input class="input" type="text" placeholder="Subtitle" :disabled="isInputLocked" v-model="subtitle">
             </div>
           </div>
+          <div class="field">
+            <label class="label">Duration</label>
+            <div class="control">
+              <input class="input" type="number" min="0" max="30" step="0.5" placeholder="Duration" :disabled="isInputLocked" v-model="duration">
+            </div>
+            <p class="help">Leave empty for automatic mode. Set to 0 to show the lower third until it is manually hidden.</p>
+          </div>
           <div class="field is-grouped">
           <div class="control">
             <button class="button is-primary" :disabled="isAnimationRunning" @click="go">Go</button>
@@ -99,6 +106,7 @@ export default defineComponent({
       styles: ['test', 'test', 'test', 'test', 'test', 'test',],
       title: '',
       subtitle: '',
+      duration: null as number | null,
       currentInsertData: {
         design: '',
         title: '',
@@ -140,16 +148,17 @@ export default defineComponent({
     go() {
       if (!this.currentChannel) return
       this.socket.emit('show_lower_third', {
-        'channel': this.currentChannel.slug,
-        'design': 'seibert_middle',
-        'title': this.title,
-        'subtitle': this.subtitle,
+        channel: this.currentChannel.slug,
+        design: 'seibert_middle',
+        title: this.title,
+        subtitle: this.subtitle,
+        duration: (this.duration || this.duration === 0) ? this.duration : undefined
       }, (response: object) => {
         console.log('received show_lower_third ack', response)
       })
     },
     preview() {
-      this.previewInsert?.show()
+      this.previewInsert?.show((this.duration || this.duration === 0) ? this.duration : undefined)
     },
     hide() {
       if (this.previewInsert?.animationRunning) {
@@ -183,7 +192,7 @@ export default defineComponent({
       this.currentInsertData.subtitle = lt.subtitle
       this.currentInsertData.duration = lt.duration
       await this.$forceUpdate()
-      this.liveInsertPreview?.show()
+      this.liveInsertPreview?.show((lt.duration || lt.duration === 0) ? lt.duration : undefined)
     },
     hideLowerThird() {
       this.liveInsertPreview?.hide()
