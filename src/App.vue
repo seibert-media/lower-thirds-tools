@@ -54,8 +54,8 @@
         </div>
         <h4 class="title is-4">Styles</h4>
         <div class="columns is-multiline is-mobile">
-          <div class="column is-one-third" v-for="style in styles">
-            <div class="card">
+          <div class="column is-one-third styles-list" v-for="style in styles" :key="style">
+            <div :class="['card', 'style', {'is-active': insertStyle === style}]" @click="insertStyle = style">
               <div class="card-image">
                 <figure class="image is-16by9">
                   <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
@@ -67,12 +67,15 @@
       </div>
       <div class="column">
         <div class="preview">
-          <!--<img src="/static/insert_mittig.jpg" style="width: 100%; height: 100%;">-->
           <div class="lower-third">
-            <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="liveInsertPreview"></insert_seibert_middle>
+            <keep-alive>
+              <component :is="liveInsertComponent" :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="liveInsertPreview"></component>
+            </keep-alive>
           </div>
           <div class="lower-third lower-third-preview">
-            <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="previewInsert" v-show="!isPreviewHidden"></insert_seibert_middle>
+            <keep-alive>
+              <component :is="previewInsertComponent" :title="title" :subtitle="subtitle" edit-mode ref="previewInsert" v-show="!isPreviewHidden"></component>
+            </keep-alive>
           </div>
         </div>
       </div>
@@ -85,12 +88,14 @@ import { defineComponent, PropType, ref } from 'vue'
 import {Channel, ChannelsData, LowerThird} from "./types";
 import {Socket} from "socket.io-client";
 import Menu from "./Menu.vue"
+import Seibert from "./lower_thirds/Seibert.vue";
 import SeibertMiddle from "./lower_thirds/SeibertMiddle.vue";
 
 export default defineComponent({
   name: "App",
   components: {
     app_menu: Menu,
+    insert_seibert: Seibert,
     insert_seibert_middle: SeibertMiddle,
   },
   props: {
@@ -103,7 +108,8 @@ export default defineComponent({
     return {
       channels: {} as ChannelsData,
       currentChannel: null as Channel | null,
-      styles: ['test', 'test', 'test', 'test', 'test', 'test',],
+      styles: ['seibert', 'seibert_middle',],
+      insertStyle: '',
       title: '',
       subtitle: '',
       duration: null as number | null,
@@ -127,6 +133,20 @@ export default defineComponent({
     },
     isPreviewHidden() {
       return !!this.liveInsertPreview?.animationRunning
+    },
+    previewInsertComponent() {
+      if (this.insertStyle && this.styles.indexOf(this.insertStyle) !== -1) {
+        return 'insert_' + this.insertStyle
+      } else {
+        return 'insert_' + this.styles[0]
+      }
+    },
+    liveInsertComponent() {
+      if (this.currentInsertData.design && this.styles.indexOf(this.currentInsertData.design) !== -1) {
+        return 'insert_' + this.currentInsertData.design
+      } else {
+        return 'insert_' + this.styles[0]
+      }
     }
   },
   methods: {
@@ -149,7 +169,7 @@ export default defineComponent({
       if (!this.currentChannel) return
       this.socket.emit('show_lower_third', {
         channel: this.currentChannel.slug,
-        design: 'seibert_middle',
+        design: this.insertStyle,
         title: this.title,
         subtitle: this.subtitle,
         duration: (this.duration || this.duration === 0) ? this.duration : undefined
@@ -206,6 +226,9 @@ export default defineComponent({
     const previewInsert = ref<InstanceType<typeof SeibertMiddle>>()
     return { liveInsertPreview, previewInsert }
   },
+  mounted() {
+    this.insertStyle = this.styles[0]
+  }
 })
 </script>
 

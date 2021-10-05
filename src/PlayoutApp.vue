@@ -1,6 +1,6 @@
 <template>
   <div class="lower-third lower-third-live">
-    <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="currentInsert"></insert_seibert_middle>
+    <component :is="liveInsertComponent" :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="currentInsert"></component>
   </div>
 </template>
 
@@ -8,11 +8,13 @@
 import { defineComponent, PropType, ref } from 'vue'
 import {Channel, ChannelsData, LowerThird} from "./types";
 import {Socket} from "socket.io-client";
+import Seibert from "./lower_thirds/Seibert.vue";
 import SeibertMiddle from "./lower_thirds/SeibertMiddle.vue";
 
 export default defineComponent({
   name: "PlayoutApp",
   components: {
+    insert_seibert: Seibert,
     insert_seibert_middle: SeibertMiddle,
   },
   props: {
@@ -25,6 +27,7 @@ export default defineComponent({
     return {
       channels: {} as ChannelsData,
       currentChannel: null as Channel | null,
+      styles: ['seibert', 'seibert_middle',],
       currentInsertData: {
         design: '',
         title: '',
@@ -38,6 +41,13 @@ export default defineComponent({
       return !!this.currentInsert?.animationRunning;
 
     },
+    liveInsertComponent() {
+      if (this.currentInsertData.design && this.styles.indexOf(this.currentInsertData.design) !== -1) {
+        return 'insert_' + this.currentInsertData.design
+      } else {
+        return 'insert_' + this.styles[0]
+      }
+    }
   },
   methods: {
     selectChannel(channel: string | Channel) {

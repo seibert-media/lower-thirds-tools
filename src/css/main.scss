@@ -44,6 +44,18 @@ html, body, div#root {
   main {
     flex-grow: 1;
   }
+
+  div.control-panel {
+    .styles-list {
+      .card.style {
+        margin: 2px;
+        &.is-active {
+          margin: 0;
+          border: $primary solid 2px;
+        }
+      }
+    }
+  }
 }
 
 div.preview {

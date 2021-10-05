@@ -1,5 +1,5 @@
 <template>
-  <div :class="['lower-third-seibert-middle', { edit: editMode && !animationRunning }, animationClass]" ref="insertWrapper">
+  <div :class="['lower-third-seibert', { edit: editMode && !animationRunning }, animationClass]" ref="insertWrapper">
 		<div class="main">
 			<div class="title-box first">
 				<div class="title-box second">
@@ -158,60 +158,59 @@ export default defineComponent({
 </script>
 
 <style>
-  .lower-third-seibert-middle {
+  .lower-third-seibert {
     position: absolute;
-    width: 100%;
-    bottom: 85px;
-    font-family: "ConduitITC TT", Lato, sans-serif;
+    left: 120px;
+    bottom: 80px;
+    font-family: "ConduitITC TT", Lato, sans-serif, Con;
   }
-  .lower-third-seibert-middle .text-spacer {
+  .lower-third-seibert .text-spacer {
     visibility: hidden;
   }
-  .lower-third-seibert-middle .text-clip {
+  .lower-third-seibert .text-clip {
     overflow: hidden;
     position: absolute;
     top: 0;
     width: 100%;
-    text-align: center;
   }
-  .lower-third-seibert-middle .text {
+  .lower-third-seibert .text {
     padding: 0 20px;
     position: relative;
   }
-  .lower-third-seibert-middle .title-box {
+  .lower-third-seibert .title-box {
     display: flex;
-    margin: 0 auto;
     transform: scaleX(0);
   }
-  .lower-third-seibert-middle .main {
+  .lower-third-seibert .main {
     color: white;
     font-weight: 600;
     font-size: 92px;
     position: relative;
     display: flex;
     text-transform: uppercase;
-    bottom: -11px;
+    bottom: -10px;
   }
-  .lower-third-seibert-middle .main .title-box.first {
+  .lower-third-seibert .main .title-box.first {
     background: #cdcdcd;
   }
-  .lower-third-seibert-middle .main .title-box.second {
+  .lower-third-seibert .main .title-box.second {
     background: #cad333;
   }
-  .lower-third-seibert-middle .main .title-box.third {
+  .lower-third-seibert .main .title-box.third {
     background: #333333;
   }
-  .lower-third-seibert-middle .main .text-clip {
+  .lower-third-seibert .main .text-clip {
     margin: -10px 0;
   }
-  .lower-third-seibert-middle .main .text-spacer {
+  .lower-third-seibert .main .text-spacer {
     margin: -10px 20px;
   }
-  .lower-third-seibert-middle .main .text {
+  .lower-third-seibert .main .text {
     transform: translateY(100%);
   }
-  .lower-third-seibert-middle.open .main .title-box {
+  .lower-third-seibert.open .main .title-box {
     animation: main-title-box-open ease-out forwards;
+    transform-origin: left;
   }
   @keyframes main-title-box-open {
     from {
@@ -221,19 +220,19 @@ export default defineComponent({
       transform: scaleX(1);
     }
   }
-  .lower-third-seibert-middle.open .main .title-box.first {
+  .lower-third-seibert.open .main .title-box.first {
     animation-delay: 0s;
     animation-duration: 0.6s;
   }
-  .lower-third-seibert-middle.open .main .title-box .second {
+  .lower-third-seibert.open .main .title-box .second {
     animation-delay: 0.3s;
     animation-duration: 0.5s;
   }
-  .lower-third-seibert-middle.open .main .title-box .third {
+  .lower-third-seibert.open .main .title-box .third {
     animation-delay: 0.6s;
     animation-duration: 0.5s;
   }
-  .lower-third-seibert-middle.open .main .text-clip .text {
+  .lower-third-seibert.open .main .text-clip .text {
     animation: main-text-open ease-out forwards;
     animation-delay: 0.9s;
     animation-duration: 0.3s;
@@ -246,10 +245,10 @@ export default defineComponent({
       transform: translateY(0%);
     }
   }
-  .lower-third-seibert-middle.close .main {
+  .lower-third-seibert.close .main {
     animation: main-title-box-fade ease-out backwards;
-    animation-delay: 0.5s;
-    animation-duration: 0.4s;
+    animation-delay: 0.3s;
+    animation-duration: 0.6s;
   }
   @keyframes main-title-box-fade {
     from {
@@ -259,8 +258,9 @@ export default defineComponent({
       opacity: 0;
     }
   }
-  .lower-third-seibert-middle.close .main .title-box {
+  .lower-third-seibert.close .main .title-box {
     animation: main-title-box-close ease-out backwards;
+    transform-origin: left;
   }
   @keyframes main-title-box-close {
     from {
@@ -270,19 +270,19 @@ export default defineComponent({
       transform: scaleX(0);
     }
   }
-  .lower-third-seibert-middle.close .main .title-box.first {
-    animation-delay: 0.5s;
-    animation-duration: 0.4s;
+  .lower-third-seibert.close .main .title-box.first {
+    animation-delay: 0.3s;
+    animation-duration: 0.6s;
   }
-  .lower-third-seibert-middle.close .main .title-box .second {
-    animation-delay: 0.4s;
-    animation-duration: 0.4s;
-  }
-  .lower-third-seibert-middle.close .main .title-box .third {
+  .lower-third-seibert.close .main .title-box .second {
     animation-delay: 0.2s;
-    animation-duration: 0.4s;
+    animation-duration: 0.6s;
   }
-  .lower-third-seibert-middle.close .main .text {
+  .lower-third-seibert.close .main .title-box .third {
+    animation-delay: 0.0s;
+    animation-duration: 0.6s;
+  }
+  .lower-third-seibert.close .main .text {
     animation: main-text-close ease-out backwards;
     animation-duration: 0.3s;
   }
@@ -294,30 +294,31 @@ export default defineComponent({
       transform: translateY(-100%);
     }
   }
-  .lower-third-seibert-middle .sub {
+  .lower-third-seibert .sub {
     font-weight: 600;
-    font-size: 56px;
+    font-size: 60px;
     position: relative;
     display: flex;
-    /*top: -10px;*/
+    left: 335px;
     color: #333333;
   }
-  .lower-third-seibert-middle .sub .title-box {
+  .lower-third-seibert .sub .title-box {
     background: #cad333;
   }
-  .lower-third-seibert-middle .sub .text-clip {
+  .lower-third-seibert .sub .text-clip {
     margin: 5px 0;
   }
-  .lower-third-seibert-middle .sub .text-spacer {
+  .lower-third-seibert .sub .text-spacer {
     margin: 5px 20px;
   }
-  .lower-third-seibert-middle .sub .text {
+  .lower-third-seibert .sub .text {
     transform: translateY(100%);
   }
-  .lower-third-seibert-middle.open .sub .title-box {
+  .lower-third-seibert.open .sub .title-box {
     animation: sub-title-box-open ease-out forwards;
     animation-delay: 0.6s;
     animation-duration: 0.5s;
+    transform-origin: left;
   }
   @keyframes sub-title-box-open {
     from {
@@ -327,7 +328,7 @@ export default defineComponent({
       transform: scaleX(1);
     }
   }
-  .lower-third-seibert-middle.open .sub .text-clip .text {
+  .lower-third-seibert.open .sub .text-clip .text {
     animation: sub-text-open ease-out forwards;
     animation-delay: 0.9s;
     animation-duration: 0.3s;
@@ -340,10 +341,10 @@ export default defineComponent({
       transform: translateY(0%);
     }
   }
-  .lower-third-seibert-middle.close .sub {
+  .lower-third-seibert.close .sub {
     animation: main-title-box-fade ease-out backwards;
-    animation-delay: 0.5s;
-    animation-duration: 0.4s;
+    animation-delay: 0.6s;
+    animation-duration: 0.2s;
   }
   @keyframes main-title-box-fade {
     from {
@@ -353,10 +354,11 @@ export default defineComponent({
       opacity: 0;
     }
   }
-  .lower-third-seibert-middle.close .sub .title-box {
+  .lower-third-seibert.close .sub .title-box {
     animation: sub-title-box-close ease-out backwards;
-    animation-delay: 0.55s;
-    animation-duration: 0.4s;
+    animation-delay: 0.2s;
+    animation-duration: 0.6s;
+    transform-origin: left;
   }
   @keyframes sub-title-box-close {
     from {
@@ -366,7 +368,7 @@ export default defineComponent({
       transform: scaleX(0);
     }
   }
-  .lower-third-seibert-middle.close .sub .text {
+  .lower-third-seibert.close .sub .text {
     animation: sub-text-close ease-out backwards;
     animation-duration: 0.3s;
   }
@@ -379,16 +381,16 @@ export default defineComponent({
     }
   }
 
-  .lower-third-seibert-middle.edit .main .title-box {
+  .lower-third-seibert.edit .main .title-box {
     transform: none;
   }
-  .lower-third-seibert-middle.edit .main .text {
+  .lower-third-seibert.edit .main .text {
     transform: none;
   }
-  .lower-third-seibert-middle.edit .sub .title-box {
+  .lower-third-seibert.edit .sub .title-box {
     transform: none;
   }
-  .lower-third-seibert-middle.edit .sub .text {
+  .lower-third-seibert.edit .sub .text {
     transform: none;
   }
 
