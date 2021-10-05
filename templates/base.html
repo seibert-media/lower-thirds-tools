@@ -7,8 +7,8 @@
     <link rel="stylesheet" type="text/css" href="/static/dist/css/main.css">
 </head>
 <body class="{% block body_class %}{% endblock %}">
-    <div id="root">
-        {% block body %}
+    {% block body %}
+        <div id="root">
             <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
                 <div class="navbar-brand">
                     <a class="navbar-item" href="/">
@@ -53,8 +53,8 @@
                 </div>
             {% endif %}
             <div id="app" class="app-container">{% block content %}{% endblock %}</div>
-        {% endblock %}
+        </div>
         <script src="/static/dist/main.js"></script>
-    </div>
+    {% endblock %}
 </body>
 </html>

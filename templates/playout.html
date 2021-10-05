@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block body_class %}playout{% endblock %}
+{% block body %}
+    <div id="app" class="lower-third playout" data-channel-slug="{{ channel.slug }}"></div>
+    <script src="/static/dist/main.js"></script>
+{% endblock %}

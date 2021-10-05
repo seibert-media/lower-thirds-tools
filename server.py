@@ -8,7 +8,7 @@ from typing import Optional
 
 import flask
 import yaml
-from flask import Flask, render_template, request
+from flask import Flask, abort, render_template, request
 from flask_babel import Babel
 from flask_socketio import Namespace, SocketIO, emit, join_room, leave_room
 from flask_wtf import CSRFProtect
@@ -160,8 +160,17 @@ def get_locale():
 # views
 
 @app.route('/')
-def index_view():  # put application's code here
+def index_view():
     return render_template('base.html')
+
+
+@app.route('/playout/<channel>')
+def playout_view(channel: str):
+    try:
+        channel = Channel.get_channel(channel)
+    except KeyError:
+        abort(404)
+    return render_template('playout.html', channel=channel)
 
 
 # websocket events
@@ -178,8 +187,8 @@ class WebSocketHandler(Namespace):
             raise ValueError('join_channel called with unknown channel slug %s' % data['channel'])
         channel = Channel.get_channel(data['channel'])
         join_room(channel.slug)
-        channel.update_channel_status(to=flask.request.sid)
         print('session %s joined channel "%s" [%s]' % (flask.request.sid, channel.name, channel.slug))
+        channel.update_channel_status(to=flask.request.sid)
 
     def on_leave_channel(self, data):
         if not isinstance(data, dict):

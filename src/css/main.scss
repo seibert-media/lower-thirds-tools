@@ -17,6 +17,11 @@ html, body, div#root {
   min-height: 100vh;
 }
 
+.playout {
+  html, body, div#app {
+    background-color: transparent;
+  }
+}
 
 .app-container {
   min-height: calc(100vh - 3.5rem);

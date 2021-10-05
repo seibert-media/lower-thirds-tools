@@ -61,7 +61,7 @@
           <div class="lower-third">
             <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="currentInsertPreview"></insert_seibert_middle>
           </div>
-          <div class="lower-third.preview">
+          <div class="lower-third preview">
             <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="previewInsert"></insert_seibert_middle>
           </div>
         </div>
@@ -156,7 +156,13 @@ export default defineComponent({
       this.currentInsertData.duration = lt.duration
       await this.$forceUpdate()
       this.currentInsertPreview?.show()
-    }
+    },
+    hideLowerThird() {
+      this.currentInsertPreview?.hide()
+    },
+    killLowerThird() {
+      this.currentInsertPreview?.abort()
+    },
   },
   setup() {
     const currentInsertPreview = ref<InstanceType<typeof SeibertMiddle>>()
