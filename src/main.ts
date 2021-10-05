@@ -117,6 +117,10 @@ export class LowerThirdsTool {
                 this.socket.emit('join_channel', {channel: _this.app.currentChannel.slug})
             }
         })
+
+        this.socket.on('reload_client', () => {
+            window.location.reload()
+        })
     }
 }
 

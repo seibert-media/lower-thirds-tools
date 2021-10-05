@@ -2,6 +2,7 @@ import os
 import re
 import secrets
 import string
+from contextlib import suppress
 from dataclasses import dataclass
 from functools import wraps
 from pprint import pprint
@@ -155,10 +156,15 @@ except Exception as e:
     print('error loading config: %s' % e)
     raise
 
+if config.get('message_queue'):
+    with suppress(ImportError):
+        from gevent import monkey
+        monkey.patch_all()
+
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY',
                                 config.get('secret', ''.join([secrets.choice(string.printable) for i in range(64)])))
-socketio = SocketIO(app)
+socketio = SocketIO(app, message_queue=config.get('message_queue'))
 csrf = CSRFProtect(app)
 babel = Babel(app)
 

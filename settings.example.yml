@@ -4,3 +4,5 @@ channels:
   - name: or an dictionary with at leat a name property.
   - name: Channels definied as dicts can configgure additional settings, like a
     slug: custom_slug
+# optional: directly passed to the message_queue parameter of SocketIO
+message_queue: "redis://"
