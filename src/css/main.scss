@@ -1,5 +1,11 @@
 @use "sass:math";
-@import "bulma.sass";
+
+// variables
+$family-sans-serif: "Roboto", "Lato", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", JoyPixels, "Noto Emoji Color", sans-serif;
+$purple:  hsl(271, 84%, 48%);
+$primary: $purple;
+
+@import "bulma/bulma.sass";
 
 // fontawesome-free
 $fa-font-path: '/static/fonts/fontawesome_free/webfonts';
