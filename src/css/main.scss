@@ -1,18 +1,12 @@
 @use "sass:math";
 
 // variables
-$family-sans-serif: "Roboto", "Lato", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", JoyPixels, "Noto Emoji Color", sans-serif;
+$family-sans-serif: "Roboto", "Lato", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", "Twimoji", "Twitter Color Emoji", "JoyPixels", "Noto Emoji Color", sans-serif;
 $purple:  hsl(271, 84%, 48%);
 $primary: $purple;
 
 @import "bulma/bulma.sass";
 
-// fontawesome-free
-$fa-font-path: '/static/fonts/fontawesome_free/webfonts';
-@import "/static/fonts/fontawesome_free/scss/fontawesome.scss";
-@import "/static/fonts/fontawesome_free/scss/regular.scss";
-@import "/static/fonts/fontawesome_free/scss/solid.scss";
-@import "/static/fonts/fontawesome_free/scss/brands.scss";
 
 // bulma overrides
 .navbar.is-dark .navbar-brand > .navbar-item .title {
