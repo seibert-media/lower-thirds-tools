@@ -1,5 +1,5 @@
 <template>
-  <div class="lower-third.live">
+  <div class="lower-third lower-third-live">
     <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="currentInsert"></insert_seibert_middle>
   </div>
 </template>

@@ -82,7 +82,7 @@ $lower-third-zindex: 200;
     display: none;
   }
 
-  &.preview {
+  &.lower-third-preview {
     z-index: $lower-third-zindex + 10;
   }
 }

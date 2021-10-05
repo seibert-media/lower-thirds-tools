@@ -61,7 +61,7 @@
           <div class="lower-third">
             <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="currentInsertPreview"></insert_seibert_middle>
           </div>
-          <div class="lower-third preview">
+          <div class="lower-third lower-third-preview">
             <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="previewInsert"></insert_seibert_middle>
           </div>
         </div>
