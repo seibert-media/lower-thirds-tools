@@ -88,7 +88,7 @@ export default defineComponent({
       if (duration === undefined || duration === null || duration < 0) {
         // if no duration is specified we calculate it based on the number of words shown
         duration = 0
-        let reading_speed = 125 // half of the average human reading speed
+        let reading_speed = 250 / 5 // one fifth of the average human reading speed
         if (this.title) {
           duration += this.title.split(' ').length * 60 / reading_speed
         }
