@@ -19,13 +19,13 @@
           <div class="field">
             <label class="label">Title</label>
             <div class="control">
-              <input class="input" type="text" placeholder="Title" :disabled="isAnimationRunning" v-model="title">
+              <input class="input" type="text" placeholder="Title" :disabled="isInputLocked" v-model="title">
             </div>
           </div>
           <div class="field">
             <label class="label">Subtitle</label>
             <div class="control">
-              <input class="input" type="text" placeholder="Subtitle" :disabled="isAnimationRunning" v-model="subtitle">
+              <input class="input" type="text" placeholder="Subtitle" :disabled="isInputLocked" v-model="subtitle">
             </div>
           </div>
           <div class="field is-grouped">
@@ -33,7 +33,10 @@
             <button class="button is-primary" :disabled="isAnimationRunning" @click="go">Go</button>
           </div>
           <div class="control">
-            <button class="button is-primary" :disabled="isAnimationRunning" @click="preview">Preview</button>
+            <button class="button is-primary" :disabled="isInputLocked" @click="preview">Preview</button>
+          </div>
+          <div class="control">
+            <button class="button is-danger" :disabled="!isAnimationRunning" @click="hide">HIDE</button>
           </div>
           <div class="control">
             <button class="button is-danger" @click="stop">STOP</button>
@@ -59,10 +62,10 @@
         <div class="preview">
           <!--<img src="/static/insert_mittig.jpg" style="width: 100%; height: 100%;">-->
           <div class="lower-third">
-            <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="currentInsertPreview"></insert_seibert_middle>
+            <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="liveInsertPreview"></insert_seibert_middle>
           </div>
           <div class="lower-third lower-third-preview">
-            <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="previewInsert"></insert_seibert_middle>
+            <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="previewInsert" v-show="!isPreviewHidden"></insert_seibert_middle>
           </div>
         </div>
       </div>
@@ -106,11 +109,17 @@ export default defineComponent({
   },
   computed: {
     isAnimationRunning() {
-      if (this.previewInsert?.animationRunning || this.currentInsertPreview?.animationRunning) {
+      if (this.previewInsert?.animationRunning || this.liveInsertPreview?.animationRunning) {
         return true
       }
       return false
     },
+    isInputLocked() {
+      return !!this.previewInsert?.animationRunning
+    },
+    isPreviewHidden() {
+      return !!this.liveInsertPreview?.animationRunning
+    }
   },
   methods: {
     selectChannel(channel: string | Channel) {
@@ -142,8 +151,27 @@ export default defineComponent({
     preview() {
       this.previewInsert?.show()
     },
+    hide() {
+      if (this.previewInsert?.animationRunning) {
+        this.previewInsert?.hide()
+      } else if (this.currentChannel) {
+        this.socket.emit('hide_lower_third', {
+          'channel': this.currentChannel.slug,
+        }, (response: object) => {
+          console.log('received hide_lower_third ack', response)
+        })
+      }
+    },
     stop() {
-      this.previewInsert?.abort()
+      if (this.previewInsert?.animationRunning) {
+        this.previewInsert?.abort()
+      } else if (this.currentChannel) {
+        this.socket.emit('kill_lower_third', {
+          'channel': this.currentChannel.slug,
+        }, (response: object) => {
+          console.log('received kill_lower_third ack', response)
+        })
+      }
     },
     reset() {
       this.title = ''
@@ -155,19 +183,19 @@ export default defineComponent({
       this.currentInsertData.subtitle = lt.subtitle
       this.currentInsertData.duration = lt.duration
       await this.$forceUpdate()
-      this.currentInsertPreview?.show()
+      this.liveInsertPreview?.show()
     },
     hideLowerThird() {
-      this.currentInsertPreview?.hide()
+      this.liveInsertPreview?.hide()
     },
     killLowerThird() {
-      this.currentInsertPreview?.abort()
+      this.liveInsertPreview?.abort()
     },
   },
   setup() {
-    const currentInsertPreview = ref<InstanceType<typeof SeibertMiddle>>()
+    const liveInsertPreview = ref<InstanceType<typeof SeibertMiddle>>()
     const previewInsert = ref<InstanceType<typeof SeibertMiddle>>()
-    return { currentInsertPreview, previewInsert }
+    return { liveInsertPreview, previewInsert }
   },
 })
 </script>
