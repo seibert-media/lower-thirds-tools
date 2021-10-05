@@ -13,6 +13,10 @@ $fa-font-path: '/static/fonts/fontawesome_free/webfonts';
   color: inherit;
 }
 
+html {
+  background-color: transparent;
+}
+
 html, body, div#root {
   min-height: 100vh;
 }
