@@ -85,7 +85,7 @@ export default defineComponent({
         console.warn('show called without text set, ignoring')
         return
       }
-      if (duration === undefined || duration < 0) {
+      if (duration === undefined || duration === null || duration < 0) {
         // if no duration is specified we calculate it based on the number of words shown
         duration = 0
         let reading_speed = 125 // half of the average human reading speed

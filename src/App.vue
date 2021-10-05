@@ -57,8 +57,12 @@
       </div>
       <div class="column">
         <div class="preview">
+          <!--<img src="/static/insert_mittig.jpg" style="width: 100%; height: 100%;">-->
           <div class="lower-third">
-            <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="currentInsert"></insert_seibert_middle>
+            <insert_seibert_middle :title="currentInsertData.title" :subtitle="currentInsertData.subtitle" ref="currentInsertPreview"></insert_seibert_middle>
+          </div>
+          <div class="lower-third.preview">
+            <insert_seibert_middle :title="title" :subtitle="subtitle" edit-mode ref="previewInsert"></insert_seibert_middle>
           </div>
         </div>
       </div>
@@ -68,7 +72,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue'
-import {Channel, ChannelsData} from "./types";
+import {Channel, ChannelsData, LowerThird} from "./types";
 import {Socket} from "socket.io-client";
 import Menu from "./Menu.vue"
 import SeibertMiddle from "./lower_thirds/SeibertMiddle.vue";
@@ -91,12 +95,18 @@ export default defineComponent({
       currentChannel: null as Channel | null,
       styles: ['test', 'test', 'test', 'test', 'test', 'test',],
       title: '',
-      subtitle: ''
+      subtitle: '',
+      currentInsertData: {
+        design: '',
+        title: '',
+        subtitle: '',
+        duration: null,
+      } as LowerThird
     }
   },
   computed: {
     isAnimationRunning() {
-      if (this.currentInsert?.animationRunning) {
+      if (this.previewInsert?.animationRunning || this.currentInsertPreview?.animationRunning) {
         return true
       }
       return false
@@ -125,24 +135,34 @@ export default defineComponent({
         'design': 'seibert_middle',
         'title': this.title,
         'subtitle': this.subtitle,
-      }, (response: {[id: string]: Any}) => {
+      }, (response: object) => {
         console.log('received show_lower_third ack', response)
       })
     },
     preview() {
-      this.currentInsert?.show()
+      this.previewInsert?.show()
     },
     stop() {
-      this.currentInsert?.abort()
+      this.previewInsert?.abort()
     },
     reset() {
       this.title = ''
       this.subtitle = ''
+    },
+    showLowerThird(lt: LowerThird) {
+      this.currentInsertData.design = lt.design
+      this.currentInsertData.title = lt.title
+      this.currentInsertData.subtitle = lt.subtitle
+      this.currentInsertData.duration = lt.duration
+      this.$forceUpdate()
+      this.currentInsertPreview?.$forceUpdate()
+      this.currentInsertPreview?.show()
     }
   },
   setup() {
-    const currentInsert = ref<InstanceType<typeof SeibertMiddle>>()
-    return { currentInsert }
+    const currentInsertPreview = ref<InstanceType<typeof SeibertMiddle>>()
+    const previewInsert = ref<InstanceType<typeof SeibertMiddle>>()
+    return { currentInsertPreview, previewInsert }
   },
 })
 </script>

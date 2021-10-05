@@ -76,6 +76,10 @@ $lower-third-zindex: 200;
   span:empty {
     display: none;
   }
+
+  &.preview {
+    z-index: $lower-third-zindex + 10;
+  }
 }
 
 // utilities

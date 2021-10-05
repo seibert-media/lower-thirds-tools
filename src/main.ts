@@ -12,7 +12,7 @@ export class LowerThirdsTool {
     constructor(socket: Socket) {
         let _this = this;
         this.socket = socket;
-        this.app = createApp(App, {socket: socket}).mount('#app');
+        this.app = createApp(App, {socket: socket}).mount('#app')
 
         // Without that typescript will complain that channels doesn't exist, even though it does.
         // I have no idea how to fix it and the sadly the Vue Typescript documentation is not help what so ever
@@ -55,6 +55,12 @@ export class LowerThirdsTool {
 
         socket.on('show_lower_third', (data: LowerThird & {channel: string}) => {
             console.log('received show_lower_third event for channel', data.channel, data)
+            _this.app.showLowerThird({
+                design: data.design,
+                title: data.title,
+                subtitle: data.subtitle,
+                duration: data.duration,
+            } as LowerThird)
         });
 
         socket.on('connect', () => {
