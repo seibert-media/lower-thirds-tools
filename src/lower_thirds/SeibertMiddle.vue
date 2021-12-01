@@ -196,10 +196,10 @@ export default defineComponent({
     background: #cdcdcd;
   }
   .lower-third-seibert-middle .main .title-box.second {
-    background: #cad333;
+    background: #24A1DC;
   }
   .lower-third-seibert-middle .main .title-box.third {
-    background: #333333;
+    background: #1C4357;
   }
   .lower-third-seibert-middle .main .text-clip {
     margin: -10px 0;
