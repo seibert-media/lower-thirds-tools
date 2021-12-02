@@ -191,6 +191,28 @@ def index_view():
     return render_template('base.html')
 
 
+@app.route("/presets")
+def presets():
+    return jsonify({
+        'presets': [
+            {
+                'id': 1,
+                'design': 'insert_seibert',
+                'title': 'Testtitel',
+                'subtitle': 'Testuntertitel',
+                'duration': 2,
+            },
+            {
+                'id': 2,
+                'design': 'insert_seibert_middle',
+                'title': 'Testtitel 2',
+                'subtitle': 'Testuntertitel 2',
+                'duration': None,
+            }
+        ]
+    }
+
+
 @app.route('/playout/<channel>')
 def playout_view(channel: str):
     try:
