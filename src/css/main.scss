@@ -113,6 +113,11 @@ $lower-third-zindex: 200;
   }
 }
 
+div.saves {
+  max-height: 35vh;
+  overflow-y: scroll;
+}
+
 // utilities
 
 .narrower {

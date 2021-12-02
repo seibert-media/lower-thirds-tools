@@ -101,7 +101,7 @@
               <td v-if="insert.duration === 0">manual</td>
               <td v-else-if="typeof insert.duration === 'undefined' || insert.duration === null">automatic</td>
               <td v-else>{{ insert.duration }} sec.</td>
-              <td class="has-text-right">
+              <td class="has-text-right" style="white-space: nowrap;">
                 <button class="button is-success" @click="loadInsert(insert)"><i class="fas fa-folder-open"></i></button>
                 <button class="button is-danger" @click="deleteInsert(insert.id)"><i class="fas fa-trash"></i></button>
               </td>
