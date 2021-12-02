@@ -271,7 +271,11 @@ export default defineComponent({
       this.title = insert.title
       this.subtitle = insert.subtitle ? insert.subtitle : ''
       this.duration = insert.duration
-      this.insertDesign = insert.design
+      if (insert.design === 'insert_seibert_middle' || insert.design === 'seibert_middle' ) {
+        this.insertDesign = 'seibert_middle'
+      } else {
+        this.insertDesign = 'seibert'
+      }
     },
     async deleteInsert(insertID: string) {
       const {data} = await axios.post('/presets/delete/' + insertID + '/')
