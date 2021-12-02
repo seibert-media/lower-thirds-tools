@@ -51,6 +51,9 @@
           <div class="control">
             <button class="button is-danger" :disabled="isAnimationRunning" @click="reset">Reset</button>
           </div>
+          <div class="control">
+            <button class="button is-success" @click="saveInsert">Save Preset</button>
+          </div>
         </div>
         <h4 class="title is-4">Styles</h4>
         <div class="columns is-multiline is-mobile">
@@ -66,6 +69,7 @@
         </div>
       </div>
       <div class="column">
+        <h4 class="title is-4">Preview</h4>
         <div class="preview">
           <div class="lower-third">
             <keep-alive>
@@ -77,6 +81,33 @@
               <component :is="previewInsertComponent" :title="title" :subtitle="subtitle" edit-mode ref="previewInsert" v-show="!isPreviewHidden"></component>
             </keep-alive>
           </div>
+        </div>
+        <div class="preview-buffer"></div>
+        <h4 class="title is-4">Saved</h4>
+        <div class="saves">
+          <table class="table is-hoverable is-fullwidth">
+            <thead>
+            <tr>
+              <th>Title</th>
+              <th>Subtitle</th>
+              <th>Duration</th>
+              <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="insert in saved_inserts" :key="insert.id">
+              <td>{{ insert.title }}</td>
+              <td>{{ insert.subtitle}}</td>
+              <td v-if="insert.duration === 0">manual</td>
+              <td v-else-if="typeof insert.duration === 'undefined' || insert.duration === null">automatic</td>
+              <td v-else>{{ insert.duration }} sec.</td>
+              <td class="has-text-right">
+                <button class="button is-success" @click="loadInsert(insert)"><i class="fas fa-folder-open"></i></button>
+                <button class="button is-danger" @click="deleteInsert(insert.id)"><i class="fas fa-trash"></i></button>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -90,6 +121,7 @@ import {Socket} from "socket.io-client";
 import Menu from "./Menu.vue"
 import Seibert from "./lower_thirds/Seibert.vue";
 import SeibertMiddle from "./lower_thirds/SeibertMiddle.vue";
+import axios from "axios"
 
 export default defineComponent({
   name: "App",
@@ -129,7 +161,8 @@ export default defineComponent({
         title: '',
         subtitle: '',
         duration: null,
-      } as LowerThird
+      } as LowerThird,
+      saved_inserts: [] as LowerThird[],
     }
   },
   computed: {
@@ -161,7 +194,7 @@ export default defineComponent({
     }
   },
   methods: {
-    selectChannel(channel: string | Channel) {
+    async selectChannel(channel: string | Channel) {
       if (typeof channel === "string") {
         channel = this.channels[channel]
         if (channel === undefined) {
@@ -175,6 +208,9 @@ export default defineComponent({
       this.currentChannel = channel
       window.location.hash = channel.slug
       this.socket.emit('join_channel', {channel: this.currentChannel.slug})
+      const {data} = await axios.get('/presets')
+      this.saved_inserts = data?.presets;
+
     },
     go() {
       if (!this.currentChannel) return
@@ -231,6 +267,29 @@ export default defineComponent({
     killLowerThird() {
       this.liveInsertPreview?.abort()
     },
+    loadInsert(insert: LowerThird) {
+      this.title = insert.title
+      this.subtitle = insert.subtitle ? insert.subtitle : ''
+      this.duration = insert.duration
+      this.insertDesign = insert.design
+    },
+    async deleteInsert(insertID: string) {
+      const {data} = await axios.post('/presets/delete/' + insertID + '/')
+      if (data?.success === true) {
+        this.saved_inserts = data?.presets
+      }
+    },
+    async saveInsert() {
+      const {data} = await axios.post('/presets/create/', {
+        design: this.insertDesign,
+        title: this.title,
+        subtitle: this.subtitle,
+        duration: (this.duration || this.duration === 0) ? this.duration : null
+      })
+      if (data?.success === true) {
+        this.saved_inserts = data?.presets
+      }
+    }
   },
   setup() {
     const liveInsertPreview = ref<InstanceType<typeof SeibertMiddle>>()

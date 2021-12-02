@@ -3,6 +3,7 @@ export interface LowerThird {
     title: string
     subtitle: string | null
     duration: number | null
+    id: string | undefined
 }
 
 export interface ChannelStatus {

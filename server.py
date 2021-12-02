@@ -1,22 +1,22 @@
 import json
 import uuid
 
-import flask
 import os
 import re
 import secrets
 import string
-import yaml
 from contextlib import suppress
 from dataclasses import dataclass
-from flask import Flask, abort, render_template, request
-from flask import jsonify
-from flask_babel import Babel
-from flask_socketio import Namespace, SocketIO, emit, join_room, leave_room
-from flask_wtf import CSRFProtect
 from functools import wraps
 from pprint import pprint
 from typing import Optional
+
+import flask
+import yaml
+from flask import Flask, abort, jsonify, render_template, request
+from flask_babel import Babel
+from flask_socketio import Namespace, SocketIO, emit, join_room, leave_room
+from flask_wtf import CSRFProtect
 
 
 @dataclass

@@ -72,17 +72,26 @@ div.preview {
   div.preview {
     transform: scale(0.25);
   }
+  div.preview-buffer {
+    height: 293px;
+  }
 }
 
 @media screen and (min-width: 1750px) {
   div.preview {
     transform: scale(0.33);
   }
+  div.preview-buffer {
+    height: 380px;
+  }
 }
 
 @media screen and (min-width: 2000px) {
   div.preview {
     transform: scale(0.50);
+  }
+  div.preview-buffer {
+    height: 565px;
   }
 }
 
