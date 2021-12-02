@@ -203,6 +203,7 @@ def get_presets():
 
 def save_presets(data):
     json.dump(data, open('lower-third-presets.json', 'w'), indent=2, ensure_ascii=False)
+    socketio.emit('presets_changed')
 
 
 @app.route("/presets")

@@ -4,6 +4,7 @@ import { createApp, ComponentPublicInstance } from "vue"
 import {Channel, ChannelsData, ChannelStatus, LowerThird} from "./types"
 import App from "/src/App.vue";
 import PlayoutApp from "./PlayoutApp.vue";
+import axios from "axios";
 
 export enum AppModes {
     'control_center',
@@ -120,6 +121,11 @@ export class LowerThirdsTool {
 
         this.socket.on('reload_client', () => {
             window.location.reload()
+        })
+
+        this.socket.on('presets_changed', async () => {
+            const {data} = await axios.get('/presets')
+            _this.app.saved_inserts = data?.presets;
         })
     }
 }
