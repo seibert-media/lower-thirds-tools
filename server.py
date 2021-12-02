@@ -168,7 +168,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY',
                                 config.get('secret', ''.join([secrets.choice(string.printable) for i in range(64)])))
 socketio = SocketIO(app, message_queue=config.get('message_queue'))
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 babel = Babel(app)
 
 supported_languages = {'de', 'en'}
