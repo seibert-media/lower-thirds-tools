@@ -1,3 +1,6 @@
+import json
+import uuid
+
 import flask
 import os
 import re
@@ -191,26 +194,79 @@ def index_view():
     return render_template('base.html')
 
 
+def get_presets():
+    try:
+        return json.load(open('lower-third-presets.json'))
+    except FileNotFoundError:
+        return []
+
+
+def save_presets(data):
+    json.dump(data, open('lower-third-presets.json', 'w'), indent=2, ensure_ascii=False)
+
+
 @app.route("/presets")
 def presets():
     return jsonify({
-        'presets': [
-            {
-                'id': 1,
-                'design': 'insert_seibert',
-                'title': 'Testtitel',
-                'subtitle': 'Testuntertitel',
-                'duration': 2,
-            },
-            {
-                'id': 2,
-                'design': 'insert_seibert_middle',
-                'title': 'Testtitel 2',
-                'subtitle': 'Testuntertitel 2',
-                'duration': None,
-            }
-        ]
+        'presets': get_presets()
     })
+
+
+def get_preset_from_request():
+    return {
+        'design': flask.request.json['design'].strip(),
+        'title': flask.request.json['title'].strip(),
+        'subtitle': flask.request.json['subtitle'].strip(),
+        'duration': flask.request.json['duration'],
+    }
+
+
+@app.route("/presets/create/", methods=['POST'])
+def preset_create():
+    presets = get_presets()
+    new_id = str(uuid.uuid4())
+    try:
+        presets.append({
+            'id': new_id,
+            **get_preset_from_request()
+        })
+    except KeyError:
+        return jsonify({
+            'success': False,
+        })
+    save_presets(presets)
+    return jsonify({
+        'success': True,
+        'new_id': new_id,
+        'presets': presets,
+    })
+
+
+@app.route("/presets/edit/<preset_id>/", methods=['POST'])
+def preset_edit(preset_id):
+    presets = get_presets()
+    for preset in presets:
+        if preset['id'] == preset_id:
+            preset.update(get_preset_from_request())
+            break
+    else:
+        return jsonify({
+            'success': False,
+        })
+    save_presets(presets)
+    return jsonify({
+        'success': True,
+        'presets': presets,
+    })
+
+
+@app.route("/presets/delete/<preset_id>/", methods=['POST'])
+def preset_delete(preset_id):
+    save_presets([
+        preset for preset in get_presets()
+        if preset['id'] != preset_id
+    ])
+    return jsonify({'success': True})
 
 
 @app.route('/playout/<channel>')
