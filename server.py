@@ -262,11 +262,16 @@ def preset_edit(preset_id):
 
 @app.route("/presets/delete/<preset_id>/", methods=['POST'])
 def preset_delete(preset_id):
-    save_presets([
-        preset for preset in get_presets()
+    presets = get_presets()
+    presets = [
+        preset for preset in presets
         if preset['id'] != preset_id
-    ])
-    return jsonify({'success': True})
+    ]
+    save_presets(presets)
+    return jsonify({
+        'success': True,
+        'presets': presets,
+    })
 
 
 @app.route('/playout/<channel>')
