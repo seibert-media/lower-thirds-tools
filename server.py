@@ -210,7 +210,7 @@ def presets():
                 'duration': None,
             }
         ]
-    }
+    })
 
 
 @app.route('/playout/<channel>')
